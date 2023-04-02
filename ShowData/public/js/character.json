@@ -1,0 +1,292 @@
+[
+  {
+    "code": 1,
+    "name": "Jackie",
+    "name_ko": "재키"
+  },
+  {
+    "code": 2,
+    "name": "Aya",
+    "name_ko": "아야"
+  },
+  {
+    "code": 3,
+    "name": "Fiora",
+    "name_ko": "피오라"
+  },
+  {
+    "code": 4,
+    "name": "Magnus",
+    "name_ko": "매그너스"
+  },
+  {
+    "code": 5,
+    "name": "Zahir",
+    "name_ko": "자히르"
+  },
+  {
+    "code": 6,
+    "name": "Nadine",
+    "name_ko": "나딘"
+  },
+  {
+    "code": 7,
+    "name": "Hyunwoo",
+    "name_ko": "현우"
+  },
+  {
+    "code": 8,
+    "name": "Hart",
+    "name_ko": "하트"
+  },
+  {
+    "code": 9,
+    "name": "Isol",
+    "name_ko": "아이솔"
+  },
+  {
+    "code": 10,
+    "name": "LiDailin",
+    "name_ko": "리 다이린"
+  },
+  {
+    "code": 11,
+    "name": "Yuki",
+    "name_ko": "유키"
+  },
+  {
+    "code": 12,
+    "name": "Hyejin",
+    "name_ko": "혜진"
+  },
+  {
+    "code": 13,
+    "name": "Xiukai",
+    "name_ko": "쇼우"
+  },
+  {
+    "code": 14,
+    "name": "Chiara",
+    "name_ko": "키아라"
+  },
+  {
+    "code": 15,
+    "name": "Sissela",
+    "name_ko": "시셀라"
+  },
+  {
+    "code": 16,
+    "name": "Silvia",
+    "name_ko": "실비아"
+  },
+  {
+    "code": 17,
+    "name": "Adriana",
+    "name_ko": "아드리아나"
+  },
+  {
+    "code": 18,
+    "name": "Shoichi",
+    "name_ko": "쇼이치"
+  },
+  {
+    "code": 19,
+    "name": "Emma",
+    "name_ko": "엠마"
+  },
+  {
+    "code": 20,
+    "name": "Lenox",
+    "name_ko": "레녹스"
+  },
+  {
+    "code": 21,
+    "name": "Rozzi",
+    "name_ko": "로지"
+  },
+  {
+    "code": 22,
+    "name": "Luke",
+    "name_ko": "루크"
+  },
+  {
+    "code": 23,
+    "name": "Cathy",
+    "name_ko": "캐시"
+  },
+  {
+    "code": 24,
+    "name": "Adela",
+    "name_ko": "아델라"
+  },
+  {
+    "code": 25,
+    "name": "Bernice",
+    "name_ko": "버니스"
+  },
+  {
+    "code": 26,
+    "name": "Barbara",
+    "name_ko": "바바라"
+  },
+  {
+    "code": 27,
+    "name": "Alex",
+    "name_ko": "알렉스"
+  },
+  {
+    "code": 28,
+    "name": "Sua",
+    "name_ko": "수아"
+  },
+  {
+    "code": 29,
+    "name": "Leon",
+    "name_ko": "레온"
+  },
+  {
+    "code": 30,
+    "name": "Eleven",
+    "name_ko": "일레븐"
+  },
+  {
+    "code": 31,
+    "name": "Rio",
+    "name_ko": "리오"
+  },
+  {
+    "code": 32,
+    "name": "William",
+    "name_ko": "윌리엄"
+  },
+  {
+    "code": 33,
+    "name": "Nicky",
+    "name_ko": "니키"
+  },
+  {
+    "code": 34,
+    "name": "Nathapon",
+    "name_ko": "나타폰"
+  },
+  {
+    "code": 35,
+    "name": "Jan",
+    "name_ko": "얀"
+  },
+  {
+    "code": 36,
+    "name": "Eva",
+    "name_ko": "이바"
+  },
+  {
+    "code": 37,
+    "name": "Daniel",
+    "name_ko": "다니엘"
+  },
+  {
+    "code": 38,
+    "name": "Jenny",
+    "name_ko": "제니"
+  },
+  {
+    "code": 39,
+    "name": "Camilo",
+    "name_ko": "카밀로"
+  },
+  {
+    "code": 40,
+    "name": "Chloe",
+    "name_ko": "클로에"
+  },
+  {
+    "code": 41,
+    "name": "Johann",
+    "name_ko": "요한"
+  },
+  {
+    "code": 42,
+    "name": "Bianca",
+    "name_ko": "비앙카"
+  },
+  {
+    "code": 43,
+    "name": "Celine",
+    "name_ko": "셀린"
+  },
+  {
+    "code": 44,
+    "name": "Echion",
+    "name_ko": "에키온"
+  },
+  {
+    "code": 45,
+    "name": "Mai",
+    "name_ko": "마이"
+  },
+  {
+    "code": 46,
+    "name": "Aiden",
+    "name_ko": "에이든"
+  },
+  {
+    "code": 47,
+    "name": "Laura",
+    "name_ko": "라우라"
+  },
+  {
+    "code": 48,
+    "name": "Tia",
+    "name_ko": "띠아"
+  },
+  {
+    "code": 49,
+    "name": "Felix",
+    "name_ko": "펠릭스"
+  },
+  {
+    "code": 50,
+    "name": "Elena",
+    "name_ko": "엘레나"
+  },
+  {
+    "code": "51",
+    "name": "Priya",
+    "name_ko": "프리야"
+  },
+  {
+    "code": "52",
+    "name": "Adina",
+    "name_ko": "아디나"
+  },
+  {
+    "code": "53",
+    "name": "Markus",
+    "name_ko": "마커스"
+  },
+  {
+    "code": "54",
+    "name": "Karla",
+    "name_ko": "칼라"
+  },
+  {
+    "code": "55",
+    "name": "Estelle",
+    "name_ko": "에스텔"
+  },
+  {
+    "code": "56",
+    "name": "Piolo",
+    "name_ko": "피올로"
+  },
+  {
+    "code": "57",
+    "name": "Martina",
+    "name_ko": "마르티나"
+  },
+  {
+    "code": "58",
+    "name": "Haze",
+    "name_ko": "헤이즈"
+  }
+]

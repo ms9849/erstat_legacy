@@ -1,0 +1,26 @@
+doctype html
+html(lang="en")
+    head
+        include partial/googleAnalysis.pug
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css")
+        link(rel="stylesheet", href="/css/bgCustom.css")
+        title ErStat.kr
+        include partial/title.pug
+    body(class="bg-custom-1")
+        include partial/nav.pug
+        div(class="container text-white text-center mt-3")
+            h2(class="display-5") Eternal Return Stat.kr
+            p <br>Erstat.kr은 Eternal Return의 게임 데이터를 날짜, 버전별로 정리하여 raw 형태로 제공하는 것에 초점을 둔 사이트입니다. 
+            p 님블뉴런은 최소 10일 이상 축적된 데이터를 신뢰성 있는 데이터로 판단하므로 <br><u>일일 통계는 밸런스를 판단할 수 있는 신뢰성 있는 데이터가 아닙니다.</u>
+        div(class="container")
+            div(class="d-grid gap-2 col-6 mx-auto")
+                a(href="/statusList?range=1" class="btn bg-custom-4 text-white btn-block btn-lg md-3 mt-3") <b>일일 통계 바로 확인하기</b>
+                a(href="/statusList?range=2" class="btn bg-custom-4 text-white btn-block btn-lg md-3 mt-3") <b>10일 통계 바로 확인하기</b>
+                a(href="/statusList?range=3" class="btn bg-custom-4 text-white btn-block btn-lg md-3 mt-3") <b>버전별 통계 바로 확인하기</b>
+                a(href="/statusList?range=4" class="btn bg-custom-4 text-white btn-block btn-lg md-3 mt-3") <b>최근 3일 통계 바로 확인하기</b>
+
+        include partial/patch.pug
+        include partial/contact.pug

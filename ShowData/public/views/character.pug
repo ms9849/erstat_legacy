@@ -1,0 +1,226 @@
+doctype html
+html(lang="en")
+    head
+        include partial/googleAnalysis.pug
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css")
+        link(rel="stylesheet", href="/css/bgCustom.css")
+        link(rel="stylesheet", href="/css/borderCustom.css")
+        if range === "3days"
+            title= weapon[data[0].bestWeapon] + " " + character[characterNum-1]['name_ko'] + " - 최근 3일 통계"
+        else if tableDate === "all"
+            title= weapon[data[0].bestWeapon] + " " + character[characterNum-1]['name_ko'] +  " - " + tableVersion + " 버전 전체 통계"        
+        else if tableDate === "10days"
+            title= weapon[data[0].bestWeapon] + " " + character[characterNum-1]['name_ko'] +  " - " + tableVersion + " 10일 통계"   
+        else 
+            title= weapon[data[0].bestWeapon] + " " + character[characterNum-1]['name_ko'] +  " - " + tableDate + " 일일 통계"
+        script.
+            function weaponChange(event) {
+                const url = new URL(window.location.href);
+                const urlParams = url.searchParams;
+                let path = window.location.href.split('?')[0]
+                window.location.href = path + "?characterNum=" + urlParams.get("characterNum") + "&bestWeapon=" + event.currentTarget.id;
+            }
+
+            function characterChange(event) {
+                const url = new URL(window.location.href);
+                const urlParams = url.searchParams;
+                let path = window.location.href.split('?')[0]
+                window.location.href = path + "?characterNum="  + event.currentTarget.id + "&bestWeapon=default";
+            }
+        include partial/title.pug
+    body(class="text-white bg-custom-1")
+        include partial/nav.pug
+        div(class="container mt-4 rounded border-custom bg-custom-2") 
+            div(class="row rounded bg-custom-4")
+                div(class="col mt-2 text-white" )
+                    h4="캐릭터 목록"
+            div(class="row mt-1")
+                div(class="container-fluid")
+                    - character.sort(function(a, b) {return a.name_ko < b.name_ko ? -1 : a.name_ko > b.name_ko ? 1 : 0;});
+                    ul(class="list-inline mt-1 mb-1")
+                        for item in character
+                            li(class="list-inline-item ms-1 mt-1 rounded bg-custom-4" id=`${item.code}` onclick="characterChange(event)" style="cursor:pointer;")
+                                div(style=`width:64px; height:64px; background-image: url('/character/${item.code}.png'); background-position:100%; background-size:64px 80px;`)
+                                div(class="text-center text-white" style="background-color:#424242; font-size: 12px;")= item['name_ko']
+                - character.sort(function(a, b) { return a.code - b.code;  });
+        - let dataSum = { top1 : 0, top3 : 0, top5 : 0, gameRank : 0, monsterKill : 0, playerKill : 0, mmrGain : 0, cnt : 0, gotMeteor : 0, gotMeteorFlag : 0 , gotTreeOfLife : 0, gotTreeOfLifeFlag : 0, omegaKilled : 0, alphaKilled : 0, wickelineKilled : 0  };
+
+        for item in data
+            - dataSum.top1 += item.top1;
+            - dataSum.top3 += item.top3;
+            - dataSum.top5 += item.top5;
+            - dataSum.gameRank += item.gameRank;
+            - dataSum.monsterKill += item.monsterKill;
+            - dataSum.playerKill += item.playerKill;
+            - dataSum.mmrGain += item.mmrGain;
+            - dataSum.cnt += item.cnt;
+            - dataSum.gotMeteor += item.gotMeteor
+            - dataSum.gotMeteorFlag += item.gotMeteorFlag
+            - dataSum.gotTreeOfLife += item.gotTreeOfLife
+            - dataSum.gotTreeOfLifeFlag += item.gotTreeOfLifeFlag
+            - dataSum.alphaKilled += item.alphaKilled
+            - dataSum.omegaKilled += item.omegaKilled
+            - dataSum.wickelineKilled += item.wickelineKilled
+
+        //- style=`background-image: url('/character_full/${characterNum}.png'); background-position:100%; background-size:cover;`
+
+        div(class="container text-center mt-5")
+            div(class="container mt-5")
+                if tableDate == "3days" && tableVersion == "latest"
+                    h2= "최근 3일 통계"
+                else if tableDate == "10days"
+                    h2= "10일 통계"
+                    h5= "버전: " + tableVersion
+                else if tableDate == "all"
+                    h2= "버전 전체 통계"
+                    h5= "버전: " + tableVersion
+                else
+                    h1="일일 통계"
+                    h5="일자: " + tableDate
+                    h5="버전: " + tableVersion
+
+                
+            div(class="container mt-5")
+                div(class="row justify-content-md-center")
+                    - for(let i=0; i< Object.keys(weaponList[characterNum-1]).length-1; i++)
+                        if weaponList[characterNum-1]['weapon'+(i+1)] != 0
+                            if data[0].bestWeapon != weaponList[characterNum-1]['weapon'+(i+1)]
+                                div(class="col col-lg-2 text-center border-custom" id=`${weaponList[characterNum-1]['weapon'+(i+1)]}` style="background-color: #424242; cursor:pointer;" onclick="weaponChange(event)")
+                                    div(class="container my-3 text-white")
+                                        b= weapon[weaponList[characterNum-1]['weapon'+(i+1)]]
+                            else
+                                div(class="col col-lg-2 text-center border-custom" id=`${weaponList[characterNum-1]['weapon'+(i+1)]}` style="background-color: #636363; cursor:pointer;" onclick="weaponChange(event)")
+                                    div(class="container my-3 text-white")
+                                        b= weapon[weaponList[characterNum-1]['weapon'+(i+1)]]
+
+        div(class="container mt-5")
+            div(class="row justify-content-md-center text-center")
+                div(class="col col-lg-3 rounded border-custom" style="background-color: #424242;")
+                    div(class="container bg-custom-1 mt-2 rounded")
+                        img(style="height:285px;" src=`/character_half/${character[characterNum-1]['code']}.png`)
+                        h2(class="mt-3 pb-3")= weapon[data[0].bestWeapon] + " " + character[characterNum-1]['name_ko']
+                div(class="col col-lg-1")
+                div(class="col text-center col-lg-3 rounded border-custom" style="background-color: #424242;")
+                    h3(class="mt-4 mb-3")= "특성 채용률"
+                    ul(class="list bg-custom-1 rounded mt-4")
+                        li(class="list-group-item")
+                            - for(var i=0; i<3; i++)
+                                if traitData[i] != undefined
+                                    div(class="row")
+                                        div(class="col-3")
+                                            img(class="mt-2 mb-2" width="64px" height="64px" onmouseover="showTrait(e)" src=`/trait/${traitData[i]['traitFirstCore']}.png`)
+                                        div(class="col-9 mt-1")
+                                            div(class="row")
+                                                div(class="col-10")= i+1+"위"
+                                                div(class="col-10")= trait.filter(function(e){return e.code == traitData[i]['traitFirstCore']})[0]['name_ko']
+                                                div(class="col-10")= "픽률  " + Math.round(traitData[i]['cnt'] / dataSum.cnt * 10000) / 100 + "%" 
+                                else
+                                    div(class="row")
+                                        div(class="col-3")
+                                            img(class="mt-2 mb-2" width="64px" height="64px" onmouseover="showTrait(e)" src=`/trait/none.png`)
+                                        div(class="col-9 mt-1")
+                                            div(class="row")
+                                                div(class="col-10")= i+1+"위"
+                                                div(class="col-10")= "표본 없음"
+                                                div(class="col-10")= "-"
+
+        div(class="container text-center mt-5 mb-5")
+            h2= "일반 통계"
+            table(class="table table-hovered table-borderless align-middle text-center border-custom")
+                thead(class="bg-custom-4")
+                    tr
+                        th(id="0" scope="col" width="8%") 픽률
+                        th(id="0" scope="col" width="8%") 승률
+                        th(id="0" scope="col" width="8%") Top 3
+                        th(id="0" scope="col" width="8%") Top 5
+                        th(id="0" scope="col" width="8%") 평균 킬
+                        th(id="0" scope="col" width="8%") 평균 동물 처치
+                        th(id="0" scope="col" width="8%") 평균 등수
+                        th(id="0" scope="col" width="8%") 평균 MMR 획득량
+                tbody(class="bg-custom-2")
+                    tr
+                        if dataSum.cnt != 0
+                            td= Math.round(dataSum.cnt /  allCnt * 10000) / 100 + "%"                        
+                            td= Math.round(dataSum.top1 / dataSum.cnt * 10000) / 100 +"%"
+                            td= Math.round((dataSum.top1 + dataSum.top3) / dataSum.cnt * 10000 ) /100 +"%"
+                            td= Math.round((dataSum.top1 + dataSum.top3 + dataSum.top5) / dataSum.cnt * 10000) / 100 +"%"
+                            td= Math.round(dataSum.playerKill / dataSum.cnt * 100) / 100
+                            td= Math.round(dataSum.monsterKill / dataSum.cnt * 10)/10 + "마리"
+                            td= Math.round(dataSum.gameRank / dataSum.cnt * 10) / 10
+                            if Math.round(dataSum.mmrGain / dataSum.cnt * 100) > 0 
+                                td(class="text-success")= "+"+Math.round(dataSum.mmrGain / dataSum.cnt * 100) / 100
+                            else if Math.round(dataSum.mmrGain / dataSum.cnt * 100) < 0
+                                td(class="text-danger")= Math.round(dataSum.mmrGain / dataSum.cnt * 100) / 100
+                            else
+                                td(class="text-muted")= Math.round(dataSum.mmrGain / dataSum.cnt * 100) / 100
+                        else  
+                            td= "표본 없음"
+                            td= "표본 없음"
+                            td= "표본 없음"
+                            td= "표본 없음"
+                            td= "표본 없음"
+                            td= "표본 없음"
+                            td= "표본 없음"
+                            td= "표본 없음"
+        div(class="container text-center mt-5 mb-5")
+            h2= "오브젝트 통계"
+            table(class="table table-hovered table-borderless align-middle text-center border-custom")
+                thead(class="bg-custom-4")
+                    tr
+                        th(id="0" scope="col" width="8%") 알파 처치 비율
+                        th(id="0" scope="col" width="8%") 오메가 처치 비율
+                        th(id="0" scope="col" width="8%") 위클라인 처치 비율
+                        th(id="0" scope="col" width="8%") 생명의 나무 획득 비율
+                        th(id="0" scope="col" width="8%") 생명의 나무 획득 수
+                        th(id="0" scope="col" width="8%") 운석 획득 비율
+                        th(id="0" scope="col" width="8%") 운석 획득 수
+                tbody(class="bg-custom-2")
+                    tr
+                        if dataSum.cnt != 0
+                            td= Math.round(dataSum.alphaKilled /  dataSum.cnt * 10000) / 100 + "%"   
+                            td= Math.round(dataSum.omegaKilled /  dataSum.cnt * 10000) / 100 + "%"   
+                            td= Math.round(dataSum.wickelineKilled /  dataSum.cnt * 10000) / 100 + "%"   
+                            td= Math.round(dataSum.gotTreeOfLifeFlag /  dataSum.cnt * 10000) / 100 + "%"   
+                            td= dataSum.gotTreeOfLife
+                            td= Math.round(dataSum.gotMeteorFlag /  dataSum.cnt * 10000) / 100 + "%"   
+                            td= dataSum.gotMeteor 
+                        else
+                            td= "표본 없음"
+                            td= "표본 없음"
+                            td= "표본 없음"
+                            td= "표본 없음"
+                            td= "0"
+                            td= "표본 없음"
+                            td= "0"
+
+
+        div(class="container text-center mt-5 mb-5")
+            h2= "전체 표본"
+            table(class="table table-hovered table-borderless align-middle text-center border-custom")
+                thead(class="bg-custom-4")
+                    tr
+                        th(id="0" scope="col" width="8%") 플레이 횟수 
+                        th(id="0" scope="col" width="8%") 승리 횟수
+                        th(id="0" scope="col" width="8%") Top 3 
+                        th(id="0" scope="col" width="8%") Top 5 
+                        th(id="0" scope="col" width="8%") 킬 
+                        th(id="0" scope="col" width="8%") 동물 처치
+                        th(id="0" scope="col" width="8%") 등수 합 
+                        th(id="0" scope="col" width="8%") MMR 획득량
+                tbody(class="bg-custom-2")
+                    tr
+                        td= dataSum.cnt
+                        td= dataSum.top1
+                        td= dataSum.top3
+                        td= dataSum.top5
+                        td= dataSum.playerKill
+                        td= dataSum.monsterKill
+                        td= dataSum.gameRank
+                        td= dataSum.mmrGain 
+        include partial/contact.pug
+
+
+

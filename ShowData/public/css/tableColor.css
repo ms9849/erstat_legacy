@@ -1,0 +1,13 @@
+.table-custom>tbody>tr>td,
+.table-custom>tbody>tr>th {
+    background-color: #424242;
+    color: white;
+    border: white;
+}
+
+.table-custom>thead>tr>th,
+.table-custom>thead>tr>th {
+    background-color: #636363;
+    color: white;
+    border-color: gray;
+}

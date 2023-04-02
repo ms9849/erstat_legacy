@@ -1,0 +1,6 @@
+script.
+    function buttonClick(event) {
+        const url = new URL(window.location.href);
+        const urlParams = url.searchParams;
+        window.location.href = "/statusList" + "?range=" + urlParams.get("range") + "&tier=" + event.currentTarget.id.replace(/\+/g,"%2B");;
+    }
