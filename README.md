@@ -1,4 +1,4 @@
-![image](https://github.com/ms9849/erstat_legacy/assets/65911657/525f7fcb-5d59-4ec3-8387-19312705a5f7)# ERstat.kr
+# ERstat.kr
 
 2022년 10월 약 3주동안 서비스했던 erstat 프로젝트입니다.
 
