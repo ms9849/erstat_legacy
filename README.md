@@ -13,18 +13,25 @@ Node.Js, Express, MySQL 을 사용하여 구현했으며 구글 GCP를 사용해
 <p>
   <img src="https://github.com/ms9849/erstat_legacy/assets/65911657/a61cd99c-585d-456c-a376-2a163804ee7e">
 </p>
+
 * * *
+
 <p>
   <img src="https://github.com/ms9849/erstat_legacy/assets/65911657/64af1b55-461b-4fff-8375-52f7f704feae">
 </p>
+
 * * *
+
 <p>
   <img src="https://github.com/ms9849/erstat_legacy/assets/65911657/de59c3b2-4125-4c80-ae6d-6481c63c1889">
 </p>
+
 * * *
+
 <p>
   <img src="https://github.com/ms9849/erstat_legacy/assets/65911657/5fbf6d40-9938-4a35-a5a5-92959b929425">
 </p>
+
 * * *
 
 
