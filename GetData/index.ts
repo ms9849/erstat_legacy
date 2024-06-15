@@ -4,7 +4,7 @@ import { getFormattedDate } from "./src/func/getFormattedDate";
 import { Mysql } from "./src/Mysql";
 import { GameData } from "./src/GameData";
 import fs from "fs";
-import { checkExecTime } from "./src/func/checkExecTime";
+import { CheckExecTime } from "./src/func/checkExecTime";
 
 const ApiKeyList: string[] = [
   "tCYNVF3Zwu1iUnM2g2doQ4F8VOXwhOmr7FzwbN3E",
@@ -24,27 +24,26 @@ function swapKey(ApiKey, idx) {
   return ApiKey;
 }
 
+// startid 가져오는 전역
 let startId: number = JSON.parse(
   fs.readFileSync("./lastGameId.json", "utf8")
 ).id;
-// startid 가져오는 전역
-let lastGameFound: boolean = false;
-// lastGame 찾았는지 여부
-const database: Mysql = new Mysql();
+
 // 전역 database 객체
+const database: Mysql = new Mysql();
 
 // 1싸이클마다 요청하는 api 수
 const reqNum: number = 50;
 
 //탐색 시간 설정. 일단은 현재로 잡아둠
-let limitDtm = new Date();
+const limitDtm = new Date();
 
-let keyIdx = 0;
 //api 배열 접근 변수
 let failedGameId: number[] = [];
 let gameDataList: GameData[] = [];
+let lastGameFound = false;
 
-async function getFailedGameData(ApiKey): Promise<number> {
+async function GetFailedGameData(ApiKey): Promise<number> {
   let gameData = [];
   let PromiseArr = [];
   let recovered: number = 0;
@@ -100,7 +99,7 @@ async function getFailedGameData(ApiKey): Promise<number> {
   return recovered;
 }
 
-async function getGameData(ApiKey): Promise<Queue<number>> {
+async function GetGameData(ApiKey): Promise<Queue<number>> {
   // 고정적으로 startId ~ startId + 99 사이 reqNum개의 id에 대한 결과를 요청
   let gameData: GameData[];
   let PromiseArr = [];
@@ -122,7 +121,6 @@ async function getGameData(ApiKey): Promise<Queue<number>> {
         })
     );
   }
-
   gameData = await Promise.all(
     PromiseArr.map((promise: Promise<GameData>) =>
       promise.catch((err) => {
@@ -156,12 +154,11 @@ async function getGameData(ApiKey): Promise<Queue<number>> {
     }
   }
 
-  if (!lastGameFound) {
-    console.log("started at: " + startId);
-    console.log("Max Success id: " + maxSuccess);
-    console.log("failed: " + failed);
-    startId += reqNum;
-  }
+  console.log("started at: " + startId);
+  console.log("Max Success id: " + maxSuccess);
+  console.log("failed: " + failed);
+  startId += reqNum;
+
   fs.writeFileSync(
     "./lastGameId.json",
     JSON.stringify({ id: startId }, null, 2)
@@ -169,7 +166,7 @@ async function getGameData(ApiKey): Promise<Queue<number>> {
   return failedList;
 }
 
-async function saveGameData(): Promise<void> {
+async function SaveGameData(): Promise<void> {
   let promiseList: Promise<void>[] = [];
   let mmrCutline: number; // in1000 cutline
   let dataCount: number = gameDataList.length;
@@ -315,7 +312,7 @@ async function saveGameData(): Promise<void> {
   }
 }
 
-async function Update(): Promise<void> {
+async function GetGameDataCycle(): Promise<void> {
   let startDtm: number;
   let recovered: number = 0;
   let ApiKey = ApiKeyList[0];
@@ -326,27 +323,20 @@ async function Update(): Promise<void> {
     gameDataList = [];
     // key swap
     swapKey(ApiKey, 1);
-    let failedGameIdQueue: Queue<number> = await getGameData(ApiKey);
+    let failedGameIdQueue: Queue<number> = await GetGameData(ApiKey);
     failedGameId.push(...failedGameIdQueue.toArray());
     startDtm = Date.now();
-    checkExecTime(startDtm, 300); // 최소 0.5초 보장
+    CheckExecTime(startDtm, 300); // 최소 0.5초 보장
 
     // 조회 실패한 데이터 재조회
     startDtm = Date.now();
     // 키 스왑
     swapKey(ApiKey, 0);
-    recovered = await getFailedGameData(ApiKey);
-    await saveGameData();
+    recovered = await GetFailedGameData(ApiKey);
+    await SaveGameData();
 
-    // 마지막 게임 id 찾았을 때 종료
-    if (lastGameFound) {
-      console.log("next Start Id is : " + startId);
-      lastGameFound = false;
-      console.log("Succeed Game Id count: " + gameDataList.length);
-      console.log("Recovered Game Id count: " + recoveredAll);
-      break;
-    }
-    checkExecTime(startDtm, 300); // 최소 0.3초 보장
+    if (lastGameFound == true) break;
+    CheckExecTime(startDtm, 300); // 최소 0.3초 보장
   }
 }
 
@@ -361,7 +351,7 @@ async function create3DayTable() {
 }
 
 async function Task() {
-  await Update();
+  await GetGameDataCycle();
   await Create10DayTable();
   await create3DayTable();
   database.close();
