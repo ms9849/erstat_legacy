@@ -7,7 +7,12 @@ interface IMysql {
   createDataTable(table: string): Promise<void>;
   createUserTable(table: string): Promise<void>;
   insertGameData(table: string, data: UserData): Promise<void>;
-  insertUserData(table: string, userNum: number, mmrBefore: number, mmrGain: number): Promise<void>;
+  insertUserData(
+    table: string,
+    userNum: number,
+    mmrBefore: number,
+    mmrGain: number
+  ): Promise<void>;
 }
 
 export class Mysql implements IMysql {
@@ -17,7 +22,7 @@ export class Mysql implements IMysql {
     this.Pool = mysql2.createPool({
       host: "localhost",
       user: "root",
-      password: "wat331331",
+      password: "9849",
       database: "userdata",
     });
     console.log("Pool has created");
@@ -36,29 +41,34 @@ export class Mysql implements IMysql {
       FROM ${table}
     ) ranked WHERE ranked.ranking = 1000;`);
 
-    if(resultPacket[0][0] != undefined) {
-      result = resultPacket[0][0]['mmr'];
+    if (resultPacket[0][0] != undefined) {
+      result = resultPacket[0][0]["mmr"];
+    } else {
+      result = 0;
     }
-    else{
-      result = 0 ;
-    }
-    
+
     connection.release();
     return result;
   }
 
   async getLatestVersion(table: string): Promise<string> {
     const connection = await this.Pool.getConnection();
-    const resultPacket = await connection.query(`SELECT version FROM ${table} ORDER BY version DESC LIMIT 1;`);
-    const result = resultPacket[0][0]['version'];
+    const resultPacket = await connection.query(
+      `SELECT version FROM ${table} ORDER BY version DESC LIMIT 1;`
+    );
+    const result = resultPacket[0][0]["version"];
     connection.release();
     return result;
   }
 
-  async saveVersion(table: string, version: string, startedAt: string): Promise<void> {
+  async saveVersion(
+    table: string,
+    version: string,
+    startedAt: string
+  ): Promise<void> {
     const connection = await this.Pool.getConnection();
     await connection.query(`INSERT INTO \`${table}\` VALUES(\'${version}\', \'${startedAt}\', 0);
-    `)
+    `);
     connection.release();
   }
 
@@ -72,7 +82,12 @@ export class Mysql implements IMysql {
     connection.release();
   }
 
-  async insertUserData(table: string, userNum: number, mmrAfter: number, mmrGain: number): Promise<void> {
+  async insertUserData(
+    table: string,
+    userNum: number,
+    mmrAfter: number,
+    mmrGain: number
+  ): Promise<void> {
     const connection = await this.Pool.getConnection();
     await connection.query(`INSERT INTO \`${table}\`(userNum, mmr)
         VALUES(${userNum}, ${mmrAfter})
@@ -136,51 +151,59 @@ export class Mysql implements IMysql {
 
   async update3daysTable(table: string): Promise<void> {
     const connection = await this.Pool.getConnection();
-    let result = await connection.query(`SELECT * FROM (select table_name from information_schema.tables where table_name like "%_all" and table_name like "%-%" order by table_name desc LIMIT 3) as a;`);
+    let result = await connection.query(
+      `SELECT * FROM (select table_name from information_schema.tables where table_name like "%_all" and table_name like "%-%" order by table_name desc LIMIT 3) as a;`
+    );
     console.log(result);
     connection.release;
   }
 
   async create10DaysTable(): Promise<void> {
     let row, cols, result: any, tblList;
-    const tierList = [ "all" , "platinum+" , "diamond+", "demigod+" , "in1000" ];
+    const tierList = ["all", "platinum+", "diamond+", "demigod+", "in1000"];
     const connection = await this.Pool.getConnection();
-    [ row, cols ] = await connection.query('SELECT version FROM versionlist where 10dayCreated = 0 order by version asc;');
+    [row, cols] = await connection.query(
+      "SELECT version FROM versionlist where 10dayCreated = 0 order by version asc;"
+    );
     tblList = row;
 
-    for(let i=0; i<tblList.length; i++) {
-      for(let j=0; j<tierList.length; j++) {
-        let tblName = tblList[i]['version'] + "_10days_" + tierList[j];
-        [ row, cols ] = await connection.query(`select table_name from information_schema.tables where table_name like "${tblList[i]['version']}%" and table_name like "%-%" and table_name like "%_${tierList[j]}" order by table_name asc LIMIT 10;`);
+    for (let i = 0; i < tblList.length; i++) {
+      for (let j = 0; j < tierList.length; j++) {
+        let tblName = tblList[i]["version"] + "_10days_" + tierList[j];
+        [row, cols] = await connection.query(
+          `select table_name from information_schema.tables where table_name like "${tblList[i]["version"]}%" and table_name like "%-%" and table_name like "%_${tierList[j]}" order by table_name asc LIMIT 10;`
+        );
         result = row;
-    
-        if(result.length >= 10) {
-          await this.createDataTable(tblName)
-          for(let i = 0; i < 10; i++) {
+
+        if (result.length >= 10) {
+          await this.createDataTable(tblName);
+          for (let i = 0; i < 10; i++) {
             await connection.query(`INSERT INTO \`${tblName}\`(characterNum, bestWeapon, traitFirstCore, top1, top3, top5, gameRank, monsterkill, playerKill, mmrGain, playTime, omegaKilled, alphaKilled, wickelineKilled, gotMeteor, gotMeteorFlag, gotTreeOfLife, gotTreeOfLifeFlag, cnt) 
-                SELECT characterNum, bestWeapon, traitFirstCore, top1, top3, top5, gameRank, monsterkill, playerKill, mmrGain, playTime, omegaKilled, alphaKilled, wickelineKilled, gotMeteor, gotMeteorFlag, gotTreeOfLife, gotTreeOfLifeFlag, cnt FROM \`${result[i]['TABLE_NAME']}\`
+                SELECT characterNum, bestWeapon, traitFirstCore, top1, top3, top5, gameRank, monsterkill, playerKill, mmrGain, playTime, omegaKilled, alphaKilled, wickelineKilled, gotMeteor, gotMeteorFlag, gotTreeOfLife, gotTreeOfLifeFlag, cnt FROM \`${result[i]["TABLE_NAME"]}\`
                 ON DUPLICATE KEY UPDATE
-                \`${tblName}\`.top1 = \`${tblName}\`.top1 + \`${result[i]['TABLE_NAME']}\`.top1,
-                \`${tblName}\`.top3 = \`${tblName}\`.top3 + \`${result[i]['TABLE_NAME']}\`.top3,
-                \`${tblName}\`.top5 = \`${tblName}\`.top5 + \`${result[i]['TABLE_NAME']}\`.top5,
-                \`${tblName}\`.gameRank = \`${tblName}\`.gameRank + \`${result[i]['TABLE_NAME']}\`.gameRank,
-                \`${tblName}\`.monsterKill = \`${tblName}\`.monsterKill + \`${result[i]['TABLE_NAME']}\`.monsterKill,
-                \`${tblName}\`.playerKill = \`${tblName}\`.playerKill + \`${result[i]['TABLE_NAME']}\`.playerKill,
-                \`${tblName}\`.mmrGain = \`${tblName}\`.mmrGain + \`${result[i]['TABLE_NAME']}\`.mmrGain,
-                \`${tblName}\`.playTime = \`${tblName}\`.playTime + \`${result[i]['TABLE_NAME']}\`.playTime,
-                \`${tblName}\`.omegaKilled = \`${tblName}\`.omegaKilled + \`${result[i]['TABLE_NAME']}\`.omegaKilled,
-                \`${tblName}\`.alphaKilled = \`${tblName}\`.alphaKilled + \`${result[i]['TABLE_NAME']}\`.alphaKilled,
-                \`${tblName}\`.wickelineKilled = \`${tblName}\`.wickelineKilled + \`${result[i]['TABLE_NAME']}\`.wickelineKilled,
-                \`${tblName}\`.gotTreeOfLife = \`${tblName}\`.gotTreeOfLife + \`${result[i]['TABLE_NAME']}\`.gotTreeOfLife,
-                \`${tblName}\`.gotMeteor = \`${tblName}\`.gotMeteor + \`${result[i]['TABLE_NAME']}\`.gotMeteor,
-                \`${tblName}\`.gotMeteorFlag = \`${tblName}\`.gotMeteorFlag + \`${result[i]['TABLE_NAME']}\`.gotMeteorFlag,
-                \`${tblName}\`.gotTreeOfLifeFlag = \`${tblName}\`.gotTreeOfLifeFlag + \`${result[i]['TABLE_NAME']}\`.gotTreeOfLifeFlag,
-                \`${tblName}\`.cnt = \`${tblName}\`.cnt + \`${result[i]['TABLE_NAME']}\`.cnt;
-            `)
+                \`${tblName}\`.top1 = \`${tblName}\`.top1 + \`${result[i]["TABLE_NAME"]}\`.top1,
+                \`${tblName}\`.top3 = \`${tblName}\`.top3 + \`${result[i]["TABLE_NAME"]}\`.top3,
+                \`${tblName}\`.top5 = \`${tblName}\`.top5 + \`${result[i]["TABLE_NAME"]}\`.top5,
+                \`${tblName}\`.gameRank = \`${tblName}\`.gameRank + \`${result[i]["TABLE_NAME"]}\`.gameRank,
+                \`${tblName}\`.monsterKill = \`${tblName}\`.monsterKill + \`${result[i]["TABLE_NAME"]}\`.monsterKill,
+                \`${tblName}\`.playerKill = \`${tblName}\`.playerKill + \`${result[i]["TABLE_NAME"]}\`.playerKill,
+                \`${tblName}\`.mmrGain = \`${tblName}\`.mmrGain + \`${result[i]["TABLE_NAME"]}\`.mmrGain,
+                \`${tblName}\`.playTime = \`${tblName}\`.playTime + \`${result[i]["TABLE_NAME"]}\`.playTime,
+                \`${tblName}\`.omegaKilled = \`${tblName}\`.omegaKilled + \`${result[i]["TABLE_NAME"]}\`.omegaKilled,
+                \`${tblName}\`.alphaKilled = \`${tblName}\`.alphaKilled + \`${result[i]["TABLE_NAME"]}\`.alphaKilled,
+                \`${tblName}\`.wickelineKilled = \`${tblName}\`.wickelineKilled + \`${result[i]["TABLE_NAME"]}\`.wickelineKilled,
+                \`${tblName}\`.gotTreeOfLife = \`${tblName}\`.gotTreeOfLife + \`${result[i]["TABLE_NAME"]}\`.gotTreeOfLife,
+                \`${tblName}\`.gotMeteor = \`${tblName}\`.gotMeteor + \`${result[i]["TABLE_NAME"]}\`.gotMeteor,
+                \`${tblName}\`.gotMeteorFlag = \`${tblName}\`.gotMeteorFlag + \`${result[i]["TABLE_NAME"]}\`.gotMeteorFlag,
+                \`${tblName}\`.gotTreeOfLifeFlag = \`${tblName}\`.gotTreeOfLifeFlag + \`${result[i]["TABLE_NAME"]}\`.gotTreeOfLifeFlag,
+                \`${tblName}\`.cnt = \`${tblName}\`.cnt + \`${result[i]["TABLE_NAME"]}\`.cnt;
+            `);
           }
-  
-          await connection.query(`update versionlist set 10dayCreated = 1 where version = "${tblList[i]['version']}"`);
-          console.log(tblList[i]['version'] + " " + tierList[j] +" DONE");
+
+          await connection.query(
+            `update versionlist set 10dayCreated = 1 where version = "${tblList[i]["version"]}"`
+          );
+          console.log(tblList[i]["version"] + " " + tierList[j] + " DONE");
         }
       }
     }
@@ -189,37 +212,39 @@ export class Mysql implements IMysql {
 
   async create3DaysTable(): Promise<void> {
     let row, cols, result: any, tblName;
-    const tierList = [ "all" , "platinum+" , "diamond+", "demigod+" , "in1000" ];
+    const tierList = ["all", "platinum+", "diamond+", "demigod+", "in1000"];
     const connection = await this.Pool.getConnection();
-    for(let i=0; i<tierList.length; i++) {
-      tblName =  "latest_3days_" + tierList[i];
-      [ row, cols ] = await connection.query(`select table_name from information_schema.tables where table_name like "%-%" and table_name like "%${tierList[i]}" order by table_name desc LIMIT 3;`);
+    for (let i = 0; i < tierList.length; i++) {
+      tblName = "latest_3days_" + tierList[i];
+      [row, cols] = await connection.query(
+        `select table_name from information_schema.tables where table_name like "%-%" and table_name like "%${tierList[i]}" order by table_name desc LIMIT 3;`
+      );
       result = row;
       await connection.query(`DROP TABLE IF EXISTS \`${tblName}\``); // delete to create new
       await this.createDataTable(tblName);
 
-      for(let j=0; j<result.length; j++) {
+      for (let j = 0; j < result.length; j++) {
         await connection.query(`INSERT INTO \`${tblName}\` (characterNum, bestWeapon, traitFirstCore, top1, top3, top5, gameRank, monsterkill, playerKill, mmrGain, playTime, omegaKilled, alphaKilled, wickelineKilled, gotMeteor, gotMeteorFlag, gotTreeOfLife, gotTreeOfLifeFlag, cnt)
-        SELECT characterNum, bestWeapon, traitFirstCore, top1, top3, top5, gameRank, monsterkill, playerKill, mmrGain, playTime, omegaKilled, alphaKilled, wickelineKilled, gotMeteor, gotMeteorFlag, gotTreeOfLife, gotTreeOfLifeFlag, cnt FROM \`${result[j]['TABLE_NAME']}\`
+        SELECT characterNum, bestWeapon, traitFirstCore, top1, top3, top5, gameRank, monsterkill, playerKill, mmrGain, playTime, omegaKilled, alphaKilled, wickelineKilled, gotMeteor, gotMeteorFlag, gotTreeOfLife, gotTreeOfLifeFlag, cnt FROM \`${result[j]["TABLE_NAME"]}\`
         ON DUPLICATE KEY UPDATE
-        \`${tblName}\`.top1 = \`${tblName}\`.top1 + \`${result[j]['TABLE_NAME']}\`.top1,
-        \`${tblName}\`.top3 = \`${tblName}\`.top3 + \`${result[j]['TABLE_NAME']}\`.top3,
-        \`${tblName}\`.top5 = \`${tblName}\`.top5 + \`${result[j]['TABLE_NAME']}\`.top5,
-        \`${tblName}\`.gameRank = \`${tblName}\`.gameRank + \`${result[j]['TABLE_NAME']}\`.gameRank,
-        \`${tblName}\`.monsterKill = \`${tblName}\`.monsterKill + \`${result[j]['TABLE_NAME']}\`.monsterKill,
-        \`${tblName}\`.playerKill = \`${tblName}\`.playerKill + \`${result[j]['TABLE_NAME']}\`.playerKill,
-        \`${tblName}\`.mmrGain = \`${tblName}\`.mmrGain + \`${result[j]['TABLE_NAME']}\`.mmrGain,
-        \`${tblName}\`.playTime = \`${tblName}\`.playTime + \`${result[j]['TABLE_NAME']}\`.playTime,
-        \`${tblName}\`.omegaKilled = \`${tblName}\`.omegaKilled + \`${result[j]['TABLE_NAME']}\`.omegaKilled,
-        \`${tblName}\`.alphaKilled = \`${tblName}\`.alphaKilled + \`${result[j]['TABLE_NAME']}\`.alphaKilled,
-        \`${tblName}\`.wickelineKilled = \`${tblName}\`.wickelineKilled + \`${result[j]['TABLE_NAME']}\`.wickelineKilled,
-        \`${tblName}\`.gotTreeOfLife = \`${tblName}\`.gotTreeOfLife + \`${result[j]['TABLE_NAME']}\`.gotTreeOfLife,
-        \`${tblName}\`.gotMeteor = \`${tblName}\`.gotMeteor + \`${result[j]['TABLE_NAME']}\`.gotMeteor,
-        \`${tblName}\`.gotMeteorFlag = \`${tblName}\`.gotMeteorFlag + \`${result[j]['TABLE_NAME']}\`.gotMeteorFlag,
-        \`${tblName}\`.gotTreeOfLifeFlag = \`${tblName}\`.gotTreeOfLifeFlag + \`${result[j]['TABLE_NAME']}\`.gotTreeOfLifeFlag,
-        \`${tblName}\`.cnt = \`${tblName}\`.cnt + \`${result[j]['TABLE_NAME']}\`.cnt;
-        `)
-        console.log("used " + result[j]['TABLE_NAME']);
+        \`${tblName}\`.top1 = \`${tblName}\`.top1 + \`${result[j]["TABLE_NAME"]}\`.top1,
+        \`${tblName}\`.top3 = \`${tblName}\`.top3 + \`${result[j]["TABLE_NAME"]}\`.top3,
+        \`${tblName}\`.top5 = \`${tblName}\`.top5 + \`${result[j]["TABLE_NAME"]}\`.top5,
+        \`${tblName}\`.gameRank = \`${tblName}\`.gameRank + \`${result[j]["TABLE_NAME"]}\`.gameRank,
+        \`${tblName}\`.monsterKill = \`${tblName}\`.monsterKill + \`${result[j]["TABLE_NAME"]}\`.monsterKill,
+        \`${tblName}\`.playerKill = \`${tblName}\`.playerKill + \`${result[j]["TABLE_NAME"]}\`.playerKill,
+        \`${tblName}\`.mmrGain = \`${tblName}\`.mmrGain + \`${result[j]["TABLE_NAME"]}\`.mmrGain,
+        \`${tblName}\`.playTime = \`${tblName}\`.playTime + \`${result[j]["TABLE_NAME"]}\`.playTime,
+        \`${tblName}\`.omegaKilled = \`${tblName}\`.omegaKilled + \`${result[j]["TABLE_NAME"]}\`.omegaKilled,
+        \`${tblName}\`.alphaKilled = \`${tblName}\`.alphaKilled + \`${result[j]["TABLE_NAME"]}\`.alphaKilled,
+        \`${tblName}\`.wickelineKilled = \`${tblName}\`.wickelineKilled + \`${result[j]["TABLE_NAME"]}\`.wickelineKilled,
+        \`${tblName}\`.gotTreeOfLife = \`${tblName}\`.gotTreeOfLife + \`${result[j]["TABLE_NAME"]}\`.gotTreeOfLife,
+        \`${tblName}\`.gotMeteor = \`${tblName}\`.gotMeteor + \`${result[j]["TABLE_NAME"]}\`.gotMeteor,
+        \`${tblName}\`.gotMeteorFlag = \`${tblName}\`.gotMeteorFlag + \`${result[j]["TABLE_NAME"]}\`.gotMeteorFlag,
+        \`${tblName}\`.gotTreeOfLifeFlag = \`${tblName}\`.gotTreeOfLifeFlag + \`${result[j]["TABLE_NAME"]}\`.gotTreeOfLifeFlag,
+        \`${tblName}\`.cnt = \`${tblName}\`.cnt + \`${result[j]["TABLE_NAME"]}\`.cnt;
+        `);
+        console.log("used " + result[j]["TABLE_NAME"]);
       }
       console.log(tblName);
     }
