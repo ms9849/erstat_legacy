@@ -1,7 +1,6 @@
-export const mysqlConfig =
-{
-    host: "localhost",
-    user: "root",
-    password: "wat331331",
-    database: "userdata",
-}
+export const mysqlConfig = {
+  host: "****",
+  user: "****",
+  password: "****",
+  database: "****",
+};
